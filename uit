@@ -1,0 +1,9 @@
+#!/bin/bash
+
+clear
+echo "De computer zal nu afsluiten"
+sleep 3
+poweroff
+
+
+

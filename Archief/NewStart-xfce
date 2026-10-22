@@ -1,0 +1,228 @@
+#!/bin/bash
+
+echo "##########################################################"
+echo "Making "up" exeutble to copy to '/usr/local/bin'"
+chmod +x up
+sleep 2
+# Now we can copy the file using the 'cp' command
+echo "Now we can copy the file using the 'cp' command"
+sleep 2
+sudo cp up /usr/local/bin
+echo "Checking if the copy was successful"
+sleep 3
+# Check if the copy was successful
+if [ $? -eq 0 ]; then
+  echo "File successfully copied"
+else
+  echo "Error copying file"
+fi
+echo ""
+echo ""
+echo "##########################################################"
+
+echo "Making "uit" exeutble to copy to '/usr/local/bin'"
+chmod +x uit
+sleep 2
+# Now we can copy the file using the 'uit' command
+echo "Now we can copy the file using the 'UIT' command"
+sleep 2
+sudo cp uit /usr/local/bin
+echo "Checking if the copy was successful"
+sleep 3
+# Check if the copy was successful
+if [ $? -eq 0 ]; then
+  echo "File "uit" successfully copied"
+else
+  echo "Error "uit" copying file"
+fi
+echo ""
+echo ""
+echo "##########################################################"
+echo "Reduce system swap tendency"
+# Verminder de swapneiging tot een redelijker niveau
+sleep 2
+
+if grep -q '^vm.swappiness=' /etc/sysctl.conf; then
+    sudo sed -i 's/^vm.swappiness=.*/vm.swappiness=5/' /etc/sysctl.conf
+else
+    echo 'vm.swappiness=5' | sudo tee -a /etc/sysctl.conf > /dev/null
+fi
+
+sudo sysctl -w vm.swappiness=5
+
+echo "Swappiness is ingesteld op 5"
+echo ""
+echo ""
+echo "##########################################################"
+echo "Turn on the firewall" #sudo ufw disable - to disable the firewall
+sleep 2
+sudo ufw enable
+echo ""
+echo ""
+echo "##########################################################"
+echo "Refresh available updates && Upgrade all packages" #Refresh available updates and Upgrade all packages
+sleep 2
+sudo apt-get update && sudo apt-get -y upgrade
+echo ""
+echo ""
+echo "##########################################################"
+echo "Install variety" #Variety is the best besktop background manager
+sleep 2
+sudo apt install -y variety
+echo ""
+echo ""
+echo "##########################################################"
+echo "Install Gparted" #Gparted lets you set partitions 
+sleep 2
+sudo apt install -y gparted
+echo ""
+echo ""
+echo "##########################################################"
+echo "Install Gimp" # Gimp is the best photo editor 
+sleep 2
+sudo apt install -y gimp
+echo ""
+echo ""
+echo "##########################################################"
+
+echo "Install Plank" #Plank is an good icon dock 
+sleep 2
+sudo apt install -y plank
+sleep 1
+# Now we can copy the file using the 'cp' command
+echo "Now we can copy the file using the 'cp' command"
+sleep 2
+cp plank.desktop ~/.config/autostart
+echo "Checking if the copy was successful"
+sleep 3
+# Check if the copy was successful
+if [ $? -eq 0 ]; then
+  echo "File successfully copied"
+else
+  echo "Error copying file"
+fi
+echo ""
+echo ""
+echo "##########################################################"
+echo "Install Nemo" #Neno is an simple but good commandline editor
+sleep 2
+sudo apt install -y nemo
+echo ""
+echo ""
+echo "##########################################################"
+
+echo "Systeem updaten en benodigde pakketten installeren..."
+apt update && apt -y upgrade
+
+echo "APT-software installeren..."
+apt install -y dconf-editor git fastfetch dmenu flameshot simplescreenrecorder
+
+echo "Flatpak installeren en configureren (indien nodig)..."
+apt install -y flatpak
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+echo "Flatpak-software installeren..."
+flatpak install -y flathub com.spotify.Client
+flatpak install -y flathub com.sublimetext.three
+
+echo "VS Code installeren via Microsoft repo..."
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/packages.microsoft.gpg
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" | tee /etc/apt/sources.list.d/vscode.list > /dev/null
+apt update
+apt install -y code
+
+echo "Telemetrie uitschakelen in VS Code..."
+mkdir -p ~/.config/Code/User
+echo '{
+    "telemetry.enableTelemetry": false,
+    "telemetry.enableCrashReporter": false
+}' > ~/.config/Code/User/settings.json
+echo "##########################################################"
+echo "Install preload" #Preload lets your programms load faster
+sleep 2
+sudo apt install -y preload
+echo ""
+echo ""
+echo "##########################################################"
+echo "Install Discord" #Discord is Discord 
+sleep 2
+wget -O ~/discord.deb https://discord.com/api/download?platform=linux&format=deb
+sudo dpkg -i ~/discord.deb
+sudo apt --fix-broken install
+echo ""
+echo ""
+echo "##########################################################"
+echo "installing Kodi" #Kodi is a good mediapalyer
+sleep 2
+sudo apt install software-properties-common 
+sudo add-apt-repository -ysP team-xbmc/ppa
+sudo apt install -y kodi
+echo ""
+echo ""
+echo "##########################################################"
+echo "Installing U-care-system-core" #ucaresystem-core is een update en schoonmaak programma voor Ubuntu based linux via de terminal
+sleep 2
+sudo add-apt-repository ppa:utappia/stable
+sudo apt-get update
+sudo apt-get install -y ucaresystem-core
+echo ""
+echo ""
+echo "##########################################################"
+echo "Installing Stacer" #Stacer is een system monitor
+sleep 2
+sudo add-apt-repository ppa:oguzhaninan/stacer -y
+sudo apt-get update
+sudo apt-get install -y stacer
+echo ""
+echo ""
+echo "##########################################################"
+echo "Installing gdebi" #Gdebi is a utility tool that works as an alternative to your default Software Center for installing applications – specifically, .deb packages while resolving and installing its dependencies and you can use it right from your terminal.
+sleep 2
+sudo apt-get install -y gdebi
+echo ""
+echo ""
+echo "##########################################################"
+
+echo "Installeren van Ubuntu Restricted Extras (media codecs)..."
+
+# Voorkom onderbrekingen door de licentiebevestiging automatisch te accepteren
+export DEBIAN_FRONTEND=noninteractive
+echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | debconf-set-selections
+
+# Installeer de media-codecs zonder dat de gebruiker iets hoeft te bevestigen
+apt update
+apt install -y ubuntu-restricted-extras libavcodec-extra
+echo "##########################################################"
+echo "Install Htop" #this a nice commandline system monitor
+sleep 2
+sudo apt-get update && sudo apt-get -y upgrade
+sudo apt-get htop
+echo ""
+echo ""
+echo "##########################################################"
+echo "Install doublecmd-gtk pavucontrol rar p7zip-rar catfish vlc" 
+
+# doublecmd-gtk - Bestandsbeheer met twee panelen, vergelijkbaar met Total Commander.
+# pavucontrol - Geavanceerde volumeregeling en selectie van audioapparaten.
+# rar - Hulpmiddel voor het maken van RAR-archieven, afhankelijk van de beschikbare pakketversie en licentievoorwaarden.
+# p7zip-rar - Ondersteuning voor RAR-archieven in de oudere p7zip-omgeving.
+# catfish - Grafische zoekfunctie voor bestanden op je computer.
+# vlc - Mediaspeler voor video en audio.
+sleep 2
+sudo apt-get install -y doublecmd-gtk pavucontrol rar p7zip-rar catfish vlc
+echo ""
+echo ""
+echo "##########################################################"
+echo ""
+echo ""
+echo "##########################################################"
+echo "#############All done now, you can type exit##############"
+echo "##########################################################"
+#echo "THIS IS A NEW BLOCK FOR NEW CODE, JUST COPY AND PASTE"
+#echo "Install " #
+#sleep 2
+#sudo apt install -y 
+#echo ""
+#echo ""
+#echo "##########################################################"
+
