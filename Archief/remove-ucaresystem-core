@@ -1,0 +1,70 @@
+
+#!/usr/bin/env bash
+
+# ucaresystem-core verwijderen
+# Geschikt voor Linux Mint XFCE
+
+set -Eeuo pipefail
+
+if [[ $EUID -eq 0 ]]; then
+    echo "Start dit script zonder sudo."
+    exit 1
+fi
+
+if ! command -v apt-get >/dev/null 2>&1; then
+    echo "FOUT: APT is niet gevonden."
+    exit 1
+fi
+
+echo "===================================="
+echo " ucaresystem-core verwijderen"
+echo "===================================="
+
+if ! dpkg-query -W \
+    -f='${db:Status-Status}' \
+    ucaresystem-core 2>/dev/null |
+    grep -qx 'installed'; then
+
+    echo "ucaresystem-core is niet geïnstalleerd."
+    exit 0
+fi
+
+echo
+echo "Geïnstalleerde versie:"
+dpkg-query -W -f='${Version}\n' ucaresystem-core
+
+echo
+echo "APT toont eerst welke wijzigingen nodig zijn."
+echo "Controleer zorgvuldig welke pakketten worden verwijderd."
+echo
+
+read -r -p "ucaresystem-core verwijderen? [j/N] " antwoord
+
+if [[ "$antwoord" =~ ^[jJ]$ ]]; then
+    sudo apt-get purge ucaresystem-core
+else
+    echo "Verwijderen geannuleerd."
+    exit 0
+fi
+
+echo
+echo "Verwijdering afgerond."
+echo
+
+read -r -p "Ongebruikte afhankelijkheden controleren? [j/N] " antwoord
+
+if [[ "$antwoord" =~ ^[jJ]$ ]]; then
+    sudo apt-get --dry-run autoremove
+
+    echo
+    read -r -p "Deze pakketten daadwerkelijk opruimen? [j/N] " antwoord
+
+    if [[ "$antwoord" =~ ^[jJ]$ ]]; then
+        sudo apt-get autoremove
+    else
+        echo "Opruimen overgeslagen."
+    fi
+fi
+
+echo
+echo "Klaar."
